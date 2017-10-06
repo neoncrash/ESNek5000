@@ -9,7 +9,8 @@ C> \defgroup faceops utility functions for manipulating face data
 C> Branch from subroutine nek_advance in core/drive1.f
 C> Advance CMT-nek one time step within nek5000 time loop
       subroutine cmt_nek_advance
-c     Solve the Euler equations
+c     Solve a conservation law whose flux functions, riemann solvers,
+c     jacobians and state relations all live in the usr file
 
       include 'SIZE'
       include 'INPUT'
@@ -273,32 +274,7 @@ C> Compute coefficients for Runge-Kutta stages \cite{TVDRK}
 
       return
       end
-!-----------------------------------------------------------------------
 
-      subroutine cmt_flow_ics
-      include 'SIZE'
-      include 'CMTDATA'
-      include 'SOLN'
-
-      integer e
-      nxyz1 = nx1*ny1*nz1
-      n     = nxyz1*lelt*toteq
-      if (ifrestart)then
-         do e=1,nelt
-            call copy(U(1,1,1,2,e),vx(1,1,1,e),nxyz1) 
-            call copy(U(1,1,1,3,e),vy(1,1,1,e),nxyz1) 
-            call copy(U(1,1,1,4,e),vz(1,1,1,e),nxyz1) 
-            call copy(U(1,1,1,5,e),t(1,1,1,e,1),nxyz1) 
-            call copy(U(1,1,1,1,e),pr(1,1,1,e),nxyz1) 
-         enddo
-         call copy(tlag(1,1,1,1,1,2),t(1,1,1,1,2),nxyz1*nelt) ! s_{n-1}
-         call copy(tlag(1,1,1,1,2,1),t(1,1,1,1,3),nxyz1*nelt) ! s_n
-      endif
-      call rzero(res1,n)
-!     call copy(res2,t(1,1,1,1,5),n) ! art visc hardcoding. old entropy resid
-      call rzero(res2,n) ! Actually,...
-      return
-      end
 !-----------------------------------------------------------------------
 
       subroutine print_cmt_timers
