@@ -35,6 +35,8 @@ C> \f$\oint \mathbf{H}^{c\ast}\cdot\mathbf{n}dA\f$ on face points
       iwp =iwm+nstate*nfq
       iflx=iwp+nstate*nfq
 
+      call fill_all_q(fatface)
+
       i_cvars=(iu1-1)*nfq+1
       do eq=1,toteq
          call faceu(eq,fatface(i_cvars))
