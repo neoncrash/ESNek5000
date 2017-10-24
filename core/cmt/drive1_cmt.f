@@ -35,9 +35,6 @@ c     jacobians and state relations all live in the usr file
          time_cmt=0.0 !time !0.0 ! until we can get settime to behave
          call cmt_flow_ics
          call init_cmt_timers
-c all point particles are initialized and 
-c preprocessing of interpolation step 
-         call usr_particles_init
          call userchk ! need more ifdefs
          call compute_mesh_h(meshh,xm1,ym1,zm1)
          call compute_grid_h(gridh,xm1,ym1,zm1)

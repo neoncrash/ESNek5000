@@ -313,3 +313,116 @@ C> @}
 
       return
       end
+<<<<<<< HEAD
+=======
+
+!-----------------------------------------------------------------------
+      subroutine compute_forcing(e,eq_num)
+      include  'SIZE'
+      include  'INPUT'
+      include  'GEOM'
+      include  'MASS'
+      include  'SOLN'
+      include  'CMTDATA'
+      include  'DEALIAS'
+      
+      integer e,eq_num
+      parameter (ldd=lxd*lyd*lzd)
+c     common /ctmp1/ ur(ldd),us(ldd),ut(ldd),ju(ldd),ud(ldd),tu(ldd)
+      real ur(lx1,ly1,lz1),us(lx1,ly1,lz1),ut(lx1,ly1,lz1),
+     >    rdumz(lx1,ly1,lz1)
+
+      nxyz=nx1*ny1*nz1
+      if(eq_num.ne.1.and.eq_num.ne.5)then
+
+        call gradl_rst(ur(1,1,1),us(1,1,1),ut(1,1,1),
+     >                                        phig(1,1,1,e),lx1,if3d)
+        if(if3d) then ! 3d
+          if(eq_num.eq.2) then
+            do i=1,nxyz
+              rdumz(i,1,1) = 1.0d+0/JACM1(i,1,1,e)*
+     >             (ur(i,1,1)*RXM1(i,1,1,e) +
+     >              us(i,1,1)*SXM1(i,1,1,e) +
+     >              ut(i,1,1)*TXM1(i,1,1,e))
+            enddo
+          elseif(eq_num.eq.3) then
+            do i=1,nxyz
+              rdumz(i,1,1) = 1.0d+0/JACM1(i,1,1,e)*
+     >             (ur(i,1,1)*RYM1(i,1,1,e) +
+     >              us(i,1,1)*SYM1(i,1,1,e) +
+     >              ut(i,1,1)*TYM1(i,1,1,e))
+            enddo
+          elseif(eq_num.eq.4) then
+            do i=1,nxyz
+              rdumz(i,1,1) = 1.0d+0/JACM1(i,1,1,e)*
+     >             (ur(i,1,1)*RZM1(i,1,1,e) +
+     >              us(i,1,1)*SZM1(i,1,1,e) +
+     >              ut(i,1,1)*TZM1(i,1,1,e))
+            enddo
+          endif
+        else ! end 3d, 2d
+          if(eq_num.eq.2) then
+            do i=1,nxyz
+              rdumz(i,1,1) = 1.0d+0/JACM1(i,1,1,e)*
+     >             (ur(i,1,1)*RXM1(i,1,1,e) +
+     >              us(i,1,1)*SXM1(i,1,1,e))
+            enddo
+          elseif(eq_num.eq.3) then
+            do i=1,nxyz
+              rdumz(i,1,1) = 1.0d+0/JACM1(i,1,1,e)*
+     >             (ur(i,1,1)*RYM1(i,1,1,e) +
+     >              us(i,1,1)*SYM1(i,1,1,e))
+            enddo
+          endif ! end 2d
+      endif ! eqn nums 2-4
+
+c     multiply by pressure
+      call col2(rdumz,pr(1,1,1,e),nxyz)
+
+        if (eq_num.eq.4.and.ldim.eq.2)then
+
+        else
+           call subcol3(res1(1,1,1,e,eq_num),rdumz(1,1,1)
+     >                  ,bm1(1,1,1,e),nxyz)
+           call subcol3(res1(1,1,1,e,eq_num),usrf(1,1,1,eq_num)
+     $                  ,bm1(1,1,1,e),nxyz) 
+        endif
+      elseif(eq_num.eq.5)then
+           call subcol3(res1(1,1,1,e,eq_num),usrf(1,1,1,eq_num)
+     $                  ,bm1(1,1,1,e),nxyz) 
+      endif
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine cmtusrf(e)
+      include 'SIZE'
+      include 'NEKUSE'
+      include 'CMTDATA'
+      include 'TSTEP'
+      include 'PARALLEL'
+
+      integer e,eg
+
+      if(istep.eq.1)then
+        n = nx1*ny1*nz1*5
+        call rzero(usrf,n)
+      endif
+      eg = lglel(e)
+      do k=1,nz1
+         do j=1,ny1
+            do i=1,nx1
+               call NEKASGN(i,j,k,e)
+               call userf(i,j,k,eg)
+               usrf(i,j,k,2) = FFX
+               usrf(i,j,k,3) = FFY
+               usrf(i,j,k,4) = FFZ
+               usrf(i,j,k,5) = qvol
+c              usrf(i,j,k,5) = (U(i,j,k,2,e)*FFX + U(i,j,k,3,e)*FFY
+c    &                       +  U(i,j,k,4,e)*FFZ)/ U(i,j,k,1,e)
+            enddo
+         enddo
+      enddo
+
+      return
+      end 
+>>>>>>> master
