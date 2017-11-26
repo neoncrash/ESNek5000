@@ -2192,6 +2192,48 @@ c        fs = 0.0
       end
 
 !-------------------------------------------------------------------------------
+      subroutine LF2D_FluxFunction(ntot,nx,ny,nz,area,hl,ul,vl,
+     >                          ll,hr,ur,vr,lr,flx)
+      include 'SIZE'
+      real nx(ntot),ny(ntot),nz(ntot),area(ntot),hl(ntot),ul(ntot),
+     >     vl(ntot),ll(ntot),hr(ntot),ur(ntot),vr(ntot),lr(ntot),
+     >     flx(ntot,toteq)
+      real mlx,mrx,mly,mry
+
+      do i=1,ntot
+! Li's dgf3.f had central fluxes of each component, then dot with normal
+         mlx=hl(i)*ul(i)
+         mrx=hr(i)*ur(i)
+         mly=hl(i)*vl(i)
+         mry=hr(i)*vr(i)
+         cfx=0.5*(mlx+mrx)*area(i)
+         cfy=0.5*(mly+mry)*area(i)
+         flx(i,1)=cfx*nx(i)+cfy*ny(i)
+         fm1xl=mlx*ul(i)+0.5*hl(i)**2
+         fm1yl=mlx*vl(i)+
+         fm2xl=mly*ul(i)+
+         fm2yl=mly*vl(i)+0.5*hl(i)**2
+         fm1xr=mrx*ur(i)+0.5*hr(i)**2
+         fm1yr=mrx*vr(i)+
+         fm2xr=mry*ur(i)+
+         fm2yr=mry*vr(i)+0.5*hr(i)**2
+
+         cfx=0.5*(fm1xl+fm1xr)*area(i)
+         cfy=0.5*(fm1yl+fm1yr)*area(i)
+         flx(i,2)=cfx*nx(i)+cfy*ny(i)
+         cfx=0.5*(fm2xl+fm2xr)*area(i)
+         cfy=0.5*(fm2yl+fm2yr)*area(i)
+         flx(i,3)=cfx*nx(i)+cfy*ny(i)
+      enddo
+
+! jump term = lambdaminus*(minus - plus).n
+      do i=1,ntot
+      enddo
+
+      return
+      end
+
+!-------------------------------------------------------------------------------
 
       subroutine fill_all_q(fatface)
       include 'SIZE'
