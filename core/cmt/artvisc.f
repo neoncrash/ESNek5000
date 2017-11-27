@@ -84,24 +84,24 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
 
-      subroutine evaluate_entropy_flux(e)
-! entropy flux function for entropy residual.
-! just vel*s for now
-      include 'SIZE'
-      include 'SOLN'
-      include 'INPUT'
-      include 'CMTDATA'
-      integer e
-
-      call rzero(totalh,3*nxd*nyd*nzd)
-      n=nx1*ny1*nz1
-
-      call col3(totalh(1,1),vx(1,1,1,e),tlag(1,1,1,e,1,1),n)
-      call col3(totalh(1,2),vy(1,1,1,e),tlag(1,1,1,e,1,1),n)
-      if (if3d) call col3(totalh(1,3),vz(1,1,1,e),tlag(1,1,1,e,1,1),n)
-
-      return
-      end
+!!!      subroutine evaluate_entropy_flux(e)
+!!!! entropy flux function for entropy residual.
+!!!! just vel*s for now
+!!!      include 'SIZE'
+!!!      include 'SOLN'
+!!!      include 'INPUT'
+!!!      include 'CMTDATA'
+!!!      integer e
+!!!
+!!!      call rzero(totalh,3*nxd*nyd*nzd)
+!!!      n=nx1*ny1*nz1
+!!!
+!!!      call col3(totalh(1,1),vx(1,1,1,e),tlag(1,1,1,e,1,1),n)
+!!!      call col3(totalh(1,2),vy(1,1,1,e),tlag(1,1,1,e,1,1),n)
+!!!      if (if3d) call col3(totalh(1,3),vz(1,1,1,e),tlag(1,1,1,e,1,1),n)
+!!!
+!!!      return
+!!!      end
 
 c-----------------------------------------------------------------------
 
