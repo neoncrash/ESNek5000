@@ -1,0 +1,7 @@
+2.0         ! DOMLEN : Domain length
+0.0         ! DIAPH1 : Position of dam 
+1.0         ! G      : gravitational accel
+3.00000     ! DL     : Initial height  on left  side of dam
+0.00000     ! UL     : Initial velocity on left  side of dam
+1.00000     ! DR     : Initial height  on right side of dam
+0.00000     ! UR     : Initial velocity on right side of dam

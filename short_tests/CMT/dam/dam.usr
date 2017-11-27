@@ -5,9 +5,17 @@
       subroutine userchk
       include 'SIZE'
       include 'TOTAL'
+      include 'TORO'
       include 'CMTDATA'
-      parameter (lt=lx1*ly1*lz1*lelt)
-      common /mystuff/ vrt(lt,3),wk1(lt),wk2(lt)
+      integer  luout(6)
+      character*26 zefn
+
+      luout(1)=37
+      luout(2)=38
+      luout(3)=39
+      luout(4)=40
+      luout(5)=41
+      luout(6)=42
 
       ifxyo = .true.
       if (istep .gt. 1) ifxyo=.false.
@@ -16,8 +24,85 @@
       time=time_cmt
       dt=dt_cmt
 
-      if (mod(istep,iostep).eq.0) call comp_vort3(vrt,wk1,wk2,vx,vy,vz)
-      if (mod(istep,iostep).eq.0) call outpost(vx,vy,vz,vrt,t,'vrt')
+      umin = glmin(vx,n)
+      umax = glmax(vx,n)
+!     if (mod(kstep,100).eq.0) then
+      if (nio.eq.0) then
+         write(6,2)istep,time,umin,' <u<',umax
+      endif
+!     endif
+2     format(i6,1p2e17.8,a4,1p1e17.8)
+
+      if (time_cmt .eq. 0.0.and..not.ifrestart) then
+           ! useric kludge to get the discontinuity right at the face
+         do e=1,nelt
+            iflag=1
+            do i=1,nxyz
+               if (xm1(i,1,1,e).lt.0.0) iflag=0
+            enddo
+            if (iflag .eq.1) then
+               ux=dr*ur
+               do i=1,nxyz
+                  u(i,1,1,1,e)=dr
+                  u(i,1,1,2,e)=ux
+                  u(i,1,1,3,e)=0.0
+               enddo
+            endif
+         enddo
+      endif
+
+      if(ifoutfld.or.istep.eq.0) then
+      call compute_primitive_vars
+
+!     if (nio.eq.0)then ! badly parallelized
+      write(zefn,'(a16,i6.6,a1,i2.2)') 'profiles/rhoprof',istep,'p',nid
+      open(unit=luout(1),file=zefn,form="formatted")
+      write(zefn,'(a14,i6.6,a1,i2.2)') 'profiles/uprof',istep,'p',nid
+      open(unit=luout(2),file=zefn,form="formatted")
+      write(zefn,'(a17,i6.6,a1,i2.2)') 'profiles/viscprof',istep,'p',nid
+      open(unit=luout(3),file=zefn,form="formatted")
+!     endif
+      do e=1,nelt
+         l=0
+         do k=1,nz1
+         do j=1,ny1
+         do i=1,nx1
+            l=l+1
+! profile writer not parallelized correctly
+            if (abs(ym1(i,j,k,e)).lt.1.0e-6) then
+                  write(luout(1),'(3e25.16)')
+     >               xm1(i,j,k,e),u(i,j,k,1,e)
+                  write(luout(2),'(3e25.16)')
+     >               xm1(i,j,k,e),vx(i,j,k,e)
+                  write(luout(6),'(6e25.16)') ! x,visco,diffk,wavevisc,resvisc
+!    >               xm1(i,j,k,e),vdiff(i,j,k,e,imu),vdiff(i,j,k,e,inus)
+     >               xm1(i,j,k,e),vdiff(i,j,k,e,inus)
+!    >              ,t(i,j,k,e,3),res2(i,j,k,e,1),res2(i,j,k,e,2)
+     >              ,t(i,j,k,e,3),res2(i,j,k,e,2)
+            endif
+! profile writer not parallelized correctly
+         enddo
+         enddo
+         enddo
+      enddo
+      do i=1,3
+         close(luout(i))
+      enddo
+
+!     call out_fld_nek ! need restart condition
+!-----------------------------------------------------------------------
+! JH030317
+! adding output fields for diagnostic purposes. optional, but perhaps should
+! be flagged by values in uservp (Navier-Stokes vs EVM GP vs both)
+         call copy(t(1,1,1,1,2),vdiff(1,1,1,1,imu),n)
+         call cmult(t(1,1,1,1,2),2.0,n)
+         call invcol2(t(1,1,1,1,2),vtrans(1,1,1,1,irho),n)
+!                  t(:,:,:,:,3)=wavevisc already
+         call copy(t(1,1,1,1,4),vdiff(1,1,1,1,inus),n)
+         call copy(t(1,1,1,1,5),res2,n) ! residual viscosity
+         call copy(t(1,1,1,1,6),res2(1,1,1,1,2),n) ! raw residual
+         if(nio.eq.0) write(37,'(i5,4e25.16)'), istep,err
+      endif ! ifoutfld
 
       return
       end
@@ -49,12 +134,15 @@ c-----------------------------------------------------------------------
       include 'CMTDATA'
 
       integer e,f,eg
-c     e = gllel(eg)
+      e = gllel(eg)
 
-      mu=0.0
+      mu=rho*res2(ix,iy,iz,e,1) ! finite c_E;
+      nu_s=0.75*mu/rho
+
       udiff =0.
+      lambda=0.0
       utrans=0.
-      nu_s=0.0
+
       return
       end
 
@@ -100,16 +188,29 @@ c-----------------------------------------------------------------------
       subroutine useric (ix,iy,iz,ieg)
       include 'SIZE'
       include 'TOTAL'
+      include 'TORO'
       include 'NEKUSE'
       include 'CMTDATA'
 
       integer e,eg, eqnum
       real r2
 
-      pi = 4.0*atan(1.0)
-      varsic(1) = h
-      varsic(2) = h*ux
-      varsic(3) = h*uy
+      if (x.gt.diaph1) then
+         ux=ur
+         rho=dr
+      else
+         ux=ul
+         rho=dl
+      endif
+
+      uy = 0.
+      uz = 0.
+
+!     phi = 1.0
+      varsic(1) = rho
+      varsic(2) = rho*ux
+      varsic(3) = rho*uy
+
       return
       end
 c-----------------------------------------------------------------------
@@ -137,12 +238,20 @@ c-----------------------------------------------------------------------
       include 'CMTBCDATA'
       include 'CMTDATA'
 
-      cpgref=1.0
       call fix_geom
 
       outflsub=.true.
       IFRESTART=.false.
       IFCNTFILT=.false.
+      open(unit=81,file="riemann.inp",form="formatted")
+      read (81,*) domlen
+      read (81,*) diaph1
+      read (81,*) cpgref
+      read (81,*) dl
+      read (81,*) ul
+      read (81,*) dr
+      read (81,*) ur
+      close(81)
       return
       end
 c-----------------------------------------------------------------------
