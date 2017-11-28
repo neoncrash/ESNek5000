@@ -17,13 +17,13 @@ c
       parameter (lelg=50)           ! max total number of elements
       parameter (lpmin=1)              ! min MPI ranks
       parameter (lpmax=1024)           ! max MPI ranks
-      parameter (ldimt=3)              ! max auxiliary fields (temperature + scalars)
+      parameter (ldimt=6)              ! max auxiliary fields (temperature + scalars)
 
       ! OPTIONAL
       parameter (lhis=1000)            ! max history points
       parameter (maxobj=4)             ! max number of objects
       parameter (lpert=3)              ! max perturbation modes
-      parameter (toteq=2)              ! max number of conserved scalars in cmt
+      parameter (toteq=3)              ! max number of conserved scalars in cmt
       parameter (nsessmax=2)           ! max sessions
       parameter (lxo=lx1)              ! max grid size on output (lxo>=lx1)
       parameter (lelx=1,lely=1,lelz=1) ! global tensor mesh dimensions
