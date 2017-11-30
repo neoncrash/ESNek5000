@@ -191,7 +191,7 @@ C> res1+=\f$\oint \mathbf{H}^{c\ast}\cdot\mathbf{n}dA\f$ on face points
          call surface_integral_full(res1(1,1,1,1,eq),flux(ieq))
       enddo
       dumchars='after_inviscid'
-      call dumpresidue(dumchars,999)
+!     call dumpresidue(dumchars,999)
 
                !                   -
       iuj=iflx ! overwritten with U -{{U}}
