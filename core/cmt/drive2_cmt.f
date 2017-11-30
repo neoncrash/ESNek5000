@@ -6,11 +6,6 @@ c-----------------------------------------------------------------------
       include 'DG'
       include 'CMTDATA'
       if (nio.eq.0) write(6,*)'Set up CMT-Nek'    
-      if (toteq.ne.5) then
-         if (nio.eq.0) write(6,*)'toteq is low ! toteq = ',toteq
-         if (nio.eq.0) write(6,*) 'Reset toteq in SIZE to 5'
-         call exitt
-      endif
       if (ifrestart) then
          ifheat = .true. ! almost certainly incorrect
       endif

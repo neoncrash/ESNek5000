@@ -18,6 +18,8 @@
       luout(5)=41
       luout(6)=42
 
+      nxyz=nx1*ny1*nz1
+
       ifxyo = .true.
       if (istep .gt. 1) ifxyo=.false.
 
@@ -39,7 +41,7 @@
          do e=1,nelt
             iflag=1
             do i=1,nxyz
-               if (xm1(i,1,1,e).lt.0.0) iflag=0
+               if (xm1(i,1,1,e).lt.diaph1) iflag=0
             enddo
             if (iflag .eq.1) then
                ux=dr*ur
@@ -48,11 +50,18 @@
                   u(i,1,1,2,e)=ux
                   u(i,1,1,3,e)=0.0
                enddo
+            else
+               ux=dl*ul
+               do i=1,nxyz
+                  u(i,1,1,1,e)=dl
+                  u(i,1,1,2,e)=ux
+                  u(i,1,1,3,e)=0.0
+               enddo
             endif
          enddo
       endif
 
-      if(ifoutfld.or.istep.eq.0) then
+      if(ifoutfld.or.istep.eq.1) then
       call compute_primitive_vars
 
 !     if (nio.eq.0)then ! badly parallelized
@@ -236,10 +245,11 @@ c-----------------------------------------------------------------------
       subroutine usrdat2
       include 'SIZE'
       include 'TOTAL'
+      include 'TORO'
       include 'CMTBCDATA'
       include 'CMTDATA'
 
-      call fix_geom
+!     call fix_geom
 
       outflsub=.true.
       IFRESTART=.false.
@@ -1299,7 +1309,7 @@ c        fs = 0.0
 ! ar       : sound speed
 
       COMMON /SCRNS/ nx(lfd), ny(lfd), nz(lfd), rl(lfd), ul(lfd),
-     >               vl(lfd), al(lfd), rr(lfd), ur(lfd), vr(lfd), 
+     >               vl(lfd), al(lfd), rr(lfd), ur(lfd), vr(lfd),
      >               ar(lfd),fs(lfd),
      >               jaco_f(lfd),flx(lfd,toteq),jaco_c(lx1*lz1)
       real nx, ny, nz, rl, ul, vl, al, rr, ur, vr, 
@@ -1319,6 +1329,8 @@ c        fs = 0.0
       nxzd  = nxd*nzd
       ifield= 1 ! You need to figure out the best way of dealing with
                 ! this variable
+
+                write(6,*) 'duh sirh nstate=',nstate
 
       do e=1,nelt
       do f=1,nface
@@ -1464,8 +1476,9 @@ c        fs = 0.0
       include 'SIZE'
       include 'SOLN'
       include 'CMTDATA'
+
       real fatface(*)
-      integer eq
+      integer eq,e
       nfq=nx1*nz1*2*ndim*nelt
       nstate = nqq
 ! where different things live
