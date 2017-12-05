@@ -262,6 +262,8 @@ c-----------------------------------------------------------------------
       read (81,*) ul
       read (81,*) dr
       read (81,*) ur
+      read (81,*) c_max
+      read (81,*) c_sub_e
       close(81)
       return
       end
@@ -553,6 +555,7 @@ C> @}
             call uservp(i,j,k,ieg)
             vdiff(i,j,k,e,imu)  = mu   ! NEKUSE
             vdiff(i,j,k,e,inus) = nu_s! CMTDATA
+            write(200+nid,*) i,j,k,mu,nu_s
          enddo
          enddo
          enddo
@@ -1329,8 +1332,6 @@ c        fs = 0.0
       nxzd  = nxd*nzd
       ifield= 1 ! You need to figure out the best way of dealing with
                 ! this variable
-
-                write(6,*) 'duh sirh nstate=',nstate
 
       do e=1,nelt
       do f=1,nface

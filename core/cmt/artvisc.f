@@ -187,6 +187,8 @@ c-----------------------------------------------------------------------
 
 ! ensure continuity at faces. doing this before |abs| causes some cancellation that,
 ! so far, appears to beneficially reduce spikiness at faces.
+      if (istep.eq.1) return
+         
 
       do e=1,nelt
          do i=1,nxyz
@@ -216,6 +218,7 @@ c-----------------------------------------------------------------------
 
       subroutine evmsmooth(resvisc,wavevisc,endpoints)
       include 'SIZE'
+      include 'TOTAL'
       include 'INPUT'
       real resvisc(nx1,ny1,nz1,nelt),wavevisc(nx1,ny1,nz1,nelt)
       real rtmp
@@ -233,6 +236,11 @@ c-----------------------------------------------------------------------
       kstart=1
       kend=nz1
       rndim=1.0/ndim
+
+      if (istep .eq. 1) then
+         call copy(resvisc,wavevisc,nxyz*nelt)
+         return
+      endif
 
       if (endpoints) then
          istart=1
@@ -342,6 +350,7 @@ c-----------------------------------------------------------------------
             numax(i,e)=c_max*maxeig*meshh(e)
          enddo
       enddo
+
 
       call max_to_trilin(numax)
 
