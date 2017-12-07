@@ -213,6 +213,7 @@ C> res1+=\f$\int_{\Gamma} \{\{\mathbf{A}^{\intercal}\nabla v\}\} \cdot \left[\ma
       call igtu_cmt(flux(iwm),flux(iuj),graduf) ! [[u]].{{gradv}}
       dumchars='after_igtu'
       call dumpresidue(dumchars,999)
+      call exitt
 
 C> res1+=\f$\int \left(\nabla v\right) \cdot \left(\mathbf{H}^c+\mathbf{H}^d\right)dV\f$ 
 C> for each equation (inner), one element at a time (outer)

@@ -216,7 +216,7 @@ c-----------------------------------------------------------------------
       uy = 0.
       uz = 0.
 
-!     phi = 1.0
+      phi = 1.0 ! lol waitaminute
       varsic(1) = rho
       varsic(2) = rho*ux
       varsic(3) = rho*uy
@@ -487,6 +487,13 @@ C> flux = \f$\mathscr{A}\f$ dU = \f$\left(\mathscr{A}^{\mbox{NS}}+\mathscr{A}^{\
       integer e, eq
       real flux(nx1*ny1*nz1,ndim),du(nx1*ny1*nz1,toteq,ndim)
 
+! diagnostic
+      do i=1,nx1*ny1*nz1
+         write(400+nid,'(i5,1x,i2,4e17.8)') i,eq,(du(i,eq,j),j=1,2),
+     >   (flux(i,j),j=1,2)
+      enddo
+! diagnostic
+
       call fluxj_evm(flux,du,e,eq)
 
 C> @}
@@ -515,10 +522,15 @@ C> @}
       if (eq .eq. 1) then
          do j=1,ndim ! flux+= viscscr*nu_s*grad (rho)
             call addcol3(flux(1,j),vdiff(1,1,1,e,inus),du(1,1,j),n)
+!@ diagnostic
+            do i=1,n
+               write(500+nid,*) j,flux(i,j)
+            enddo
+!@ diagnostic
          enddo
       else ! parabolic, but with different viscosity than height
          do j=1,ndim ! flux+= viscscr*nu_s*grad (rho)
-            call addcol3(flux(1,j),vdiff(1,1,1,e,imu),du(1,1,j),n)
+            call addcol3(flux(1,j),vdiff(1,1,1,e,imu),du(1,2,j),n)
          enddo
 
       endif ! eq==1?
@@ -555,7 +567,6 @@ C> @}
             call uservp(i,j,k,ieg)
             vdiff(i,j,k,e,imu)  = mu   ! NEKUSE
             vdiff(i,j,k,e,inus) = nu_s! CMTDATA
-            write(200+nid,*) i,j,k,mu,nu_s
          enddo
          enddo
          enddo
@@ -780,7 +791,7 @@ c     ! save velocity on fine mesh for dealiasing
             vx(i,j,k,e) = ux
             vy(i,j,k,e) = uy
             vtrans(i,j,k,e,irho)  = rho
-!           phig(i,j,k,e)  = phi
+            phig(i,j,k,e)  = phi
 !           pr(i,j,k,e)    = pres
             u(i,j,k,irg,e) = rho
             u(i,j,k,irpu,e)= rho*ux

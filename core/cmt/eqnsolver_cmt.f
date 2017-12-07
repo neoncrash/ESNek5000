@@ -103,6 +103,12 @@ C> \f$G^T U\f$
             call col3(hface(l,eq,1),hface(l,eq,3),unx(1,1,1,e), nf)
             call col3(hface(l,eq,2),hface(l,eq,3),uny(1,1,1,e), nf)
             if(if3d) call col2(hface(l,eq,3),unz(1,1,1,e),nf)
+! diuagnostic
+            do i = 1,nf
+               write(100+nid,*) eq,ummcu(i,e,eq)
+!              write(100+nid,*) eq,(hface(l+i-1,eq,j),j=1,2)
+            enddo
+! diuagnostic
          enddo
          l=l+nf
       enddo
@@ -142,7 +148,18 @@ C> \f$G^T U\f$
 !!            enddo
 ! JH110716 but not today. for now, let maxima do my thinking in the fluxj* routines
 
+! diagnostic
+            do i=1,nxyz
+               write(200+nid,'(4e17.8)') 
+     <          gradu(i,1,1),gradu(i,1,2),gradu(i,2,1),gradu(i,2,2)
+            enddo
+! diagnostic
             call agradu(diffh,gradu,e,eq)
+! diagnostic
+            do i=1,nxyz
+               write(300+nid,*) diffh(i,1),diffh(i,2)
+            enddo
+! diagnostic
 
             do j=1,ndim
                call copy(superhugeh(m,j),diffh(1,j),nxyz)

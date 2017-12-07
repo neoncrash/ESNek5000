@@ -27,7 +27,10 @@ C> by nek5000
       m0 = nx1-1
 
       do eq=1,toteq
-         call invcol3(ud,u(1,1,1,eq,e),phig(1,1,1,e),nxyz1)
+!        call invcol3(ud,u(1,1,1,eq,e),phig(1,1,1,e),nxyz1)
+         write(100+nid,*) 'now yo see it ',u(1,1,1,eq,e)
+         call copy(ud,u(1,1,1,eq,e),nxyz1)
+         write(100+nid,*) 'now yo dont ',ud(1)
 
          if (if3d) then
             call local_grad3(ur,us,ut,ud,m0,1,dxm1,dxtm1)

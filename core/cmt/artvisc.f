@@ -219,7 +219,6 @@ c-----------------------------------------------------------------------
       subroutine evmsmooth(resvisc,wavevisc,endpoints)
       include 'SIZE'
       include 'TOTAL'
-      include 'INPUT'
       real resvisc(nx1,ny1,nz1,nelt),wavevisc(nx1,ny1,nz1,nelt)
       real rtmp
       common /ctmp1/ rtmp(lx1,ly1,lz1)

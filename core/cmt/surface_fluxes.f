@@ -44,6 +44,11 @@ C> \f$\oint \mathbf{H}^{c\ast}\cdot\mathbf{n}dA\f$ on face points
 !          we want the governing equations to look
          call invcol2(fatface(i_cvars),fatface(iwm+nfq*(iph-1)),nfq)
          i_cvars=i_cvars+nfq
+!diagnostic
+         do i=1,nfq
+            write(40+nid,*) eq,fatface(i_cvars+i-1)
+         enddo
+!diagnostic
       enddo
 
       call face_state_commo(fatface(iwm),fatface(iwp),nfq,nstate
