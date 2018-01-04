@@ -40,15 +40,9 @@ C> \f$\oint \mathbf{H}^{c\ast}\cdot\mathbf{n}dA\f$ on face points
       i_cvars=(iu1-1)*nfq+1
       do eq=1,toteq
          call faceu(eq,fatface(i_cvars))
-! JH080317 at least get the product rule right until we figure out how
-!          we want the governing equations to look
-         call invcol2(fatface(i_cvars),fatface(iwm+nfq*(iph-1)),nfq)
+! not until we have phi in fatface for shallow water
+!        call invcol2(fatface(i_cvars),fatface(iwm+nfq*(iph-1)),nfq)
          i_cvars=i_cvars+nfq
-!diagnostic
-         do i=1,nfq
-            write(40+nid,*) eq,fatface(i_cvars+i-1)
-         enddo
-!diagnostic
       enddo
 
       call face_state_commo(fatface(iwm),fatface(iwp),nfq,nstate
@@ -58,6 +52,17 @@ C> \f$\oint \mathbf{H}^{c\ast}\cdot\mathbf{n}dA\f$ on face points
 
       call InviscidFlux(fatface(iwm),fatface(iwp),fatface(iflx)
      >                 ,nstate,toteq)
+
+!diagnostic ! full2face x & y if needed. Not sure I trust this
+!     icm=iflx
+!     do eq=1,toteq
+!        do i=1,nfq
+!           write(40+nid,*) eq,fatface(icm+i-1)
+!        enddo
+!        icm=icm+nfq
+!     enddo
+!     call exitt
+!diagnostic
 
 !     call face_flux_commo(fatface(iflx),fatface(iflx),ndg_face,toteq,
 !    >                     flux_hndl) ! for non-symmetric gs_op someday

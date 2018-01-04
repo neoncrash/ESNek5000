@@ -84,7 +84,7 @@
      >               xm1(i,j,k,e),u(i,j,k,1,e)
                   write(luout(2),'(3e25.16)')
      >               xm1(i,j,k,e),vx(i,j,k,e)
-                  write(luout(6),'(6e25.16)') ! x,visco,diffk,wavevisc,resvisc
+                  write(luout(3),'(6e25.16)') ! x,visco,diffk,wavevisc,resvisc
 !    >               xm1(i,j,k,e),vdiff(i,j,k,e,imu),vdiff(i,j,k,e,inus)
      >               xm1(i,j,k,e),vdiff(i,j,k,e,inus)
 !    >              ,t(i,j,k,e,3),res2(i,j,k,e,1),res2(i,j,k,e,2)
