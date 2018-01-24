@@ -347,6 +347,7 @@ c-----------------------------------------------------------------------
          rhomax(e)=vlamax(vtrans(1,1,1,e,irho),nxyz)
          do i=1,nxyz
             numax(i,e)=c_max*maxeig*meshh(e)
+            write(200+nid,*) c_max,maxeig,meshh(e),wavespeed(i)
          enddo
       enddo
 

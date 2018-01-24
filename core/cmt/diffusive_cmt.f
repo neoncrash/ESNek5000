@@ -26,11 +26,6 @@ C> ummcu = \f$\mathbf{U}^--\{\{\mathbf{U}\}\}\f$
          call add3(ummcu(1,ivar),uminus(1,ivar),uplus(1,ivar),nf)
          call cmult(ummcu(1,ivar),const,nf)        !         -
          call add2(ummcu(1,ivar),uminus(1,ivar),nf)!ummcu = U -{{U}}
-!diagnostic
-         do i=1,nf
-            write(50+nid,*) ivar,uminus(i,ivar),uplus(i,ivar)
-         enddo
-!diagnostic
       enddo
 
 C> @}

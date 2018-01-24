@@ -147,6 +147,7 @@ c-----------------------------------------------------------------------
       e = gllel(eg)
 
       mu=rho*res2(ix,iy,iz,e,1) ! finite c_E;
+      write(6,*) 'duh sir ',nu_s
       nu_s=0.75*mu/rho
 
       udiff =0.
@@ -487,14 +488,13 @@ C> flux = \f$\mathscr{A}\f$ dU = \f$\left(\mathscr{A}^{\mbox{NS}}+\mathscr{A}^{\
       integer e, eq
       real flux(nx1*ny1*nz1,ndim),du(nx1*ny1*nz1,toteq,ndim)
 
+      call fluxj_evm(flux,du,e,eq)
 ! diagnostic
       do i=1,nx1*ny1*nz1
          write(400+nid,'(i5,1x,i2,4e17.8)') i,eq,(du(i,eq,j),j=1,2),
      >   (flux(i,j),j=1,2)
       enddo
 ! diagnostic
-
-      call fluxj_evm(flux,du,e,eq)
 
 C> @}
       return
@@ -524,7 +524,7 @@ C> @}
             call addcol3(flux(1,j),vdiff(1,1,1,e,inus),du(1,1,j),n)
 !@ diagnostic
             do i=1,n
-               write(500+nid,*) j,flux(i,j)
+               write(500+nid,*) j,flux(i,j),vdiff(i,1,1,e,inus)
             enddo
 !@ diagnostic
          enddo
