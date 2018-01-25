@@ -5,5 +5,5 @@
 0.00000     ! UL     : Initial velocity on left  side of dam
 1.00000     ! DR     : Initial height  on right side of dam
 0.00000     ! UR     : Initial velocity on right side of dam
-0.0         ! c_max
-0.0        ! c_sub_e
+0.5         ! c_max
+40.0        ! c_sub_e

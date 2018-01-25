@@ -143,11 +143,6 @@ C> \f$G^T U\f$
 ! JH110716 but not today. for now, let maxima do my thinking in the fluxj* routines
 
             call agradu(diffh,gradu,e,eq)
-! diagnostic
-            do i=1,nxyz
-               write(300+nid,*) diffh(i,1),diffh(i,2)
-            enddo
-! diagnostic
 
             do j=1,ndim
                call copy(superhugeh(m,j),diffh(1,j),nxyz)

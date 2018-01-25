@@ -147,7 +147,6 @@ c-----------------------------------------------------------------------
       e = gllel(eg)
 
       mu=rho*res2(ix,iy,iz,e,1) ! finite c_E;
-      write(6,*) 'duh sir ',nu_s
       nu_s=0.75*mu/rho
 
       udiff =0.
