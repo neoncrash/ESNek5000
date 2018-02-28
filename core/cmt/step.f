@@ -340,14 +340,17 @@ c
             zcrn(7) = z(i1,j2,k2,e)
             zcrn(8) = z(i2,j2,k2,e)
          endif
-         dist=1.0e36
+! min isn't so good for deformed elements. Try max
+!        dist=1.0e36
+         dist=-1.0
          do ic1=1,ncrn
             do ic2=1,ncrn
                if (ic2 .ne. ic1) then
                   dtmp=(xcrn(ic2)-xcrn(ic1))**2+
      >                 (ycrn(ic2)-ycrn(ic1))**2+
      >                 (zcrn(ic2)-zcrn(ic1))**2
-                  dist=min(dist,sqrt(dtmp))
+!                 dist=min(dist,sqrt(dtmp))
+                  dist=max(dist,sqrt(dtmp))
                endif
             enddo
          enddo
