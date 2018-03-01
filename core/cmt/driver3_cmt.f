@@ -29,13 +29,14 @@ C> conserved unknowns U
          dmin=vlmin(u(1,1,1,irg,e),nxyz)
          if (dmin .lt. 0.0) then
             ifailr=lglel(e)
-            write(6,*) nid,'***NEGATIVE DENSITY***',dmin,lglel(e)
-            do i=1,nxyz
-               write(116,*)lglel(e),
-     > xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,irg,e)
-            enddo
+            write(6,*) nid,'***NEGATIVE DENSITY***',dmin,lglel(e),
+     > xm1(1,1,1,e),ym1(1,1,1,e)
+!           do i=1,nxyz
+!              write(116,*)lglel(e),
+!    > xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,irg,e)
+!           enddo
          endif
-         call nekgsync
+!        call nekgsync
          call invcol3(vx(1,1,1,e),u(1,1,1,irpu,e),u(1,1,1,irg,e),nxyz)
          call invcol3(vy(1,1,1,e),u(1,1,1,irpv,e),u(1,1,1,irg,e),nxyz)
 !        if (if3d)
@@ -62,13 +63,14 @@ C> conserved unknowns U
          emin=vlmin(energy,nxyz)
          if (emin .lt. 0.0) then
             ifaile=lglel(e)
-            write(6,*) nid, ' HAS NEGATIVE ENERGY ',emin,lglel(e)
-            do i=1,nxyz
-               write(117,'(4e17.8)')
-     >           xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,5,e),energy(i,1,1)
-            enddo
+            write(6,*) nid, ' HAS NEGATIVE ENERGY ',emin,lglel(e),
+     >                 xm1(1,1,1,e),ym1(1,1,1,e)
+!           do i=1,nxyz
+!              write(117,'(4e17.8)')
+!    >           xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,5,e),energy(i,1,1)
+!           enddo
          endif
-         call nekgsync
+!        call nekgsync
          call tdstate(e,energy) ! compute state, fill ifailt
       enddo
 
