@@ -394,6 +394,17 @@ if ! cat SIZE | grep -q 'SIZE.inc' ; then
   fi
   fi
 fi
+  if [ $CMT -ne 0 ]; then
+      if [ -e "cmtparticles.usrp" ]; then
+         echo 'Particles found CMT'
+      else
+         if ! cat SIZE | grep -q 'llpart' ; then
+            echo >>SIZE
+            echo 'c automatically added by makenek' >>SIZE
+            echo '      parameter(llpart = 1  ) ! Allocation for particles '  >>SIZE
+         fi
+      fi
+  fi
 
 # tweak all SIZE file versions
 if ! cat SIZE | grep -qi 'ldimt_proj' ; then

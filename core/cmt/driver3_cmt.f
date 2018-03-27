@@ -29,14 +29,11 @@ C> conserved unknowns U
          dmin=vlmin(u(1,1,1,irg,e),nxyz)
          if (dmin .lt. 0.0) then
             ifailr=lglel(e)
-            write(6,*) nid,'***NEGATIVE DENSITY***',dmin,lglel(e),
-     > xm1(1,1,1,e),ym1(1,1,1,e)
-!           do i=1,nxyz
-!              write(116,*)lglel(e),
-!    > xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,irg,e)
-!           enddo
+            write(6,'(i6,a20,e17.8,i8,3e17.8)') 
+     >       nid,'has rho<0,elm,x,y,phi=',
+     >      dmin,lglel(e),xm1(1,1,1,e),ym1(1,1,1,e),
+     >       vlmin(phig(1,1,1,e),nxyz)
          endif
-!        call nekgsync
          call invcol3(vx(1,1,1,e),u(1,1,1,irpu,e),u(1,1,1,irg,e),nxyz)
          call invcol3(vy(1,1,1,e),u(1,1,1,irpv,e),u(1,1,1,irg,e),nxyz)
 !        if (if3d)
@@ -63,14 +60,11 @@ C> conserved unknowns U
          emin=vlmin(energy,nxyz)
          if (emin .lt. 0.0) then
             ifaile=lglel(e)
-            write(6,*) nid, ' HAS NEGATIVE ENERGY ',emin,lglel(e),
-     >                 xm1(1,1,1,e),ym1(1,1,1,e)
-!           do i=1,nxyz
-!              write(117,'(4e17.8)')
-!    >           xm1(i,1,1,e),ym1(i,1,1,e),u(i,1,1,5,e),energy(i,1,1)
-!           enddo
+            write(6,'(i6,a20,e17.8,i8,3e17.8)') 
+     >       nid,'has neg e,elm,x,y,phi=',
+     >      emin,lglel(e),xm1(1,1,1,e),ym1(1,1,1,e),
+     >       vlmin(phig(1,1,1,e),nxyz)
          endif
-!        call nekgsync
          call tdstate(e,energy) ! compute state, fill ifailt
       enddo
 
@@ -129,8 +123,8 @@ c We have perfect gas law. Cvg is stored full field
 ! JH020718 long-overdue sanity checks
          if (temp .lt. 0.0) then
             ifailt=eg
-            write(6,'(i6,a26,3i2,i8,e15.6)') ! might want to be less verbose
-     >      nid,' HAS NEGATIVE TEMPERATURE ', i,j,k,eg,temp
+            write(6,'(i6,a26,3i2,i8,2e15.6)') ! might want to be less verbose
+     >      nid,' HAS NEGATIVE TEMPERATURE ',i,j,k,eg,temp,phig(i,j,k,e)
          endif
          vtrans(i,j,k,e,icp)= cp*rho
          vtrans(i,j,k,e,icv)= cv*rho
@@ -190,12 +184,12 @@ c-----------------------------------------------------------------------
       ntotv=nelv*nxyz1
       ltott=lelt*nxyz1
       ntotcv=lelt*nxyz1*toteq
-      call rzero(phig,ltott)
+      call rone(phig,ltott)
       call rzero(csound,ltott)
       call rzero(vtrans,ltott*ldimt1)
       call rzero(vdiff ,ltott*ldimt1)
       call rzero(u,ntotcv)
-      call usr_particles_init
+      call usr_particles_init(1)
       call cmtuic
       if(ifrestart) call my_full_restart !  Check restart files. soon...
 

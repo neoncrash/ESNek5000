@@ -438,6 +438,7 @@ C> @}
       include  'SIZE'
       include  'INPUT'
       include  'GEOM'
+      include  'PARALLEL'
       include  'MASS'
       include  'SOLN'
       include  'CMTDATA'
@@ -453,7 +454,7 @@ c     common /ctmp1/ ur(ldd),us(ldd),ut(ldd),ju(ldd),ud(ldd),tu(ldd)
       if(eq_num.ne.1.and.eq_num.ne.5)then
 
         call gradl_rst(ur(1,1,1),us(1,1,1),ut(1,1,1),
-     >                                        phig(1,1,1,e),lx1,if3d)
+     >                                   phig(1,1,1,e),lx1,if3d)
         if(if3d) then ! 3d
           if(eq_num.eq.2) then
             do i=1,nxyz
@@ -494,6 +495,7 @@ c     common /ctmp1/ ur(ldd),us(ldd),ut(ldd),ju(ldd),ud(ldd),tu(ldd)
       endif ! eqn nums 2-4
 
 c     multiply by pressure
+c     call dssum(rdumz,lx1,ly1,lz1)
       call col2(rdumz,pr(1,1,1,e),nxyz)
 
         if (eq_num.eq.4.and.ldim.eq.2)then
@@ -530,9 +532,11 @@ c-----------------------------------------------------------------------
             do i=1,lx1
                call NEKASGN(i,j,k,e)
                call userf(i,j,k,eg)
-               usrf(i,j,k,2) = FFX
-               usrf(i,j,k,3) = FFY
-               usrf(i,j,k,4) = FFZ
+               ! note fx,fy,fz multiply by density to stay 
+               ! consistent with nek5000 units. Same for phig (cancels)
+               usrf(i,j,k,2) = FFX*u(i,j,k,1,e)*phig(i,j,k,e)
+               usrf(i,j,k,3) = FFY*u(i,j,k,1,e)*phig(i,j,k,e)
+               usrf(i,j,k,4) = FFZ*u(i,j,k,1,e)*phig(i,j,k,e)
                usrf(i,j,k,5) = qvol
 c              usrf(i,j,k,5) = (U(i,j,k,2,e)*FFX + U(i,j,k,3,e)*FFY
 c    &                       +  U(i,j,k,4,e)*FFZ)/ U(i,j,k,1,e)
